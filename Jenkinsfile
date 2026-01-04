@@ -72,12 +72,32 @@ pipeline {
                 results: [[path: 'target/allure-results']]
             )
         }
-        failure {
-                    echo 'Pipeline failed ❌'
-                }
 
-                success {
-                    echo 'Pipeline succeeded ✅'
+        success{
+            emailtext(
+            subject: "✅ UI Tests SUCCESS - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """
+            <p>UI tests completed successfully.</p>
+                            <p><b>Job:</b> ${env.JOB_NAME}</p>
+                            <p><b>Build:</b> ${env.BUILD_NUMBER}</p>
+                            <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                """,
+            mimeType: 'text/html',
+            to: 'qa-team@company.com'
+            )
+        }
+
+        failure {
+                    subject: "❌ UI Tests FAILED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                                body: """
+                                    <p><b>UI tests failed.</b></p>
+                                    <p>Please check logs and Allure report.</p>
+                                    <p><b>Job:</b> ${env.JOB_NAME}</p>
+                                    <p><b>Build:</b> ${env.BUILD_NUMBER}</p>
+                                    <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                                """,
+                                mimeType: 'text/html',
+                                to: 'qa-team@company.com'
                 }
     }
 }
