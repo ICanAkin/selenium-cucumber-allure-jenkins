@@ -7,10 +7,10 @@ pipeline {
              choices: ['@smoke','@regression', '@login'],
              description: 'Which test tag to run?'
         )
-        triggers {
-            cron('H 2 * * *') //Zaman ayarı eklenmiştir.
-        }
     }
+     triggers {
+                cron('H 2 * * *') //Zaman ayarı eklenmiştir.
+            }
 
     tools {
         maven 'Maven'
