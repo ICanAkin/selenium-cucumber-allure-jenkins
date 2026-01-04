@@ -9,7 +9,7 @@ pipeline {
   environment {
         ALLURE_RESULTS = 'target/allure-results'
         ALLURE_REPORT  = 'target/allure-report'
-
+}
     stages {
 
         stage('Checkout') {
