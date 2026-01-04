@@ -74,7 +74,7 @@ pipeline {
         }
 
         success{
-            emailtext(
+            emailext(
             subject: "✅ UI Tests SUCCESS - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
             <p>UI tests completed successfully.</p>
@@ -88,6 +88,7 @@ pipeline {
         }
 
         failure {
+                    emailext(
                     subject: "❌ UI Tests FAILED - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                                 body: """
                                     <p><b>UI tests failed.</b></p>
@@ -98,6 +99,7 @@ pipeline {
                                 """,
                                 mimeType: 'text/html',
                                 to: 'qa-team@company.com'
+                                )
                 }
     }
 }
