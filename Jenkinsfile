@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    options{
+    timestamps()
+    skipStagesAfterUnstable()
+    }
+
     parameters {
         choice( //Buradaki yapı, hangi testin çalışacağının seçilmesine olanak sağlar
              name: 'TEST_TAG',
@@ -40,6 +45,30 @@ pipeline {
             echo "Build alınıyor..."
            }
         }
+
+        stage('Compile') {
+              steps {
+               bat 'mvn clean compile'
+                    }
+                }
+
+        stage('Smoke Tests') {
+               when {
+                expression { params.TEST_TAG.contains('@smoke') }
+                    }
+                    steps {
+                        bat 'mvn test -Dcucumber.filter.tags="@smoke"'
+                    }
+                }
+
+        stage('Regression Tests') {
+                when {
+                 expression { params.TEST_TAG.contains('@regression') }
+                    }
+                    steps {
+                        bat 'mvn test -Dcucumber.filter.tags="@regression"'
+                    }
+                }
 
         stage('UI Tests'){
             when {
@@ -83,7 +112,7 @@ pipeline {
                             <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                 """,
             mimeType: 'text/html',
-            to: 'qa-team@company.com'
+            to: 'isracan22tr@gmail.com'
             )
         }
 
@@ -98,7 +127,7 @@ pipeline {
                                     <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                                 """,
                                 mimeType: 'text/html',
-                                to: 'qa-team@company.com'
+                                to: 'isracan22tr@gmail.com'
                                 )
                 }
     }
