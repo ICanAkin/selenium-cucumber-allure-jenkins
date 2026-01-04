@@ -2,11 +2,14 @@ pipeline {
     agent any
 
     parameters {
-    choice(
-    name: 'TEST_TAG',
-    choices: ['@smoke','@regression', '@login'],
-    description: 'Which test tag to run?'
+        choice( //Buradaki yapı, hangi testin çalışacağının seçilmesine olanak sağlar
+             name: 'TEST_TAG',
+             choices: ['@smoke','@regression', '@login'],
+             description: 'Which test tag to run?'
         )
+        triggers {
+            cron('H 2 * * *') //Zaman ayarı eklenmiştir.
+        }
     }
 
     tools {
@@ -28,10 +31,11 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                 bat '''
-                 mvn clean test -Dcucumber.filter.tags=${params.TEST_TAG}
-                  '''
-            }
+            script {
+                def tag = params.TEST_TAG ?: '@regression'
+                bat "mvn clean test -Dcucumber.filter.tags=${tag}"
+             }
+           }
         }
 
         stage('Generate Allure Report') {
