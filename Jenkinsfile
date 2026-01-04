@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    parameters {
+    choice(
+    name: 'TEST_TAG',
+    choices: ['@smoke','@regression', '@login'],
+    description: 'Which test tag to run?'
+        )
+    }
+
     tools {
         maven 'Maven'
         allure 'Allure'
@@ -21,7 +29,7 @@ pipeline {
         stage('Build & Test') {
             steps {
                  bat '''
-                 mvn clean test
+                 mvn clean test -Dcucumber.filter.tags=${params.TEST_TAG}
                   '''
             }
         }
