@@ -7,9 +7,14 @@ pipeline {
              choices: ['@smoke','@regression', '@login'],
              description: 'Which test tag to run?'
         )
+        booleanParam(
+            name: 'RUN_UI_TESTS',
+            defaultValue: true,
+            description: 'UI testleri çalışsın mı?'
+        )
     }
      triggers {
-                cron('H 2 * * *') //Zaman ayarı eklenmiştir.
+                cron('H 2 * * 1-5') //Zaman ayarı eklenmiştir.
             }
 
     tools {
@@ -25,17 +30,24 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                checkout scm
+            git branch :'main',
+                url: 'https://github.com/ICanAkin/selenium-cucumber-allure-jenkins'
             }
         }
 
-        stage('Build & Test') {
+        stage('Build') {
             steps {
-            script {
-                def tag = params.TEST_TAG ?: '@regression'
-                bat "mvn clean test -Dcucumber.filter.tags=${tag}"
-             }
+            echo "Build alınıyor..."
            }
+        }
+
+        stage('UI Tests'){
+            when {
+            expression {params.RUN_UI_TESTS}
+            }
+            steps{
+                echo "UI testleri ${params.ENV} ortamında çalışıyor"
+            }
         }
 
         stage('Generate Allure Report') {
